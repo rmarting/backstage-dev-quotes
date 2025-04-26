@@ -76,3 +76,90 @@ I will try and release a new version with the new quotes as soon as possible. Ke
 ## License
 
 This project is released under the Apache 2.0 License.
+
+## Export as Dynamic Plugin to be used on Red Hat Developer Hub
+
+To deploy this plugin as a dynamic plugin on Red Hat Developer Hub, run the following commands:
+
+1. Build locally:
+
+```bash
+yarn install
+```
+
+2. Export as dynamic plugin and tagged as a local container image
+
+```bash
+yarn build:image
+```
+
+Tag the version with the same version of the package:
+
+```bash
+podman tag localhost/plugin-dev-quotes-homepage-dynamic:latest localhost/plugin-dev-quotes-homepage-dynamic:3.0.7
+```
+
+3. Push into a container image, for example GitHub Container Registry:
+
+```bash
+podman push localhost/plugin-dev-quotes-homepage-dynamic:3.0.7 ghcr.io/rmarting/plugin-dev-quotes-homepage-dynamic:3.0.7
+```
+
+4. Define the dynamic plugin in the `rhdh-dynamic-plugins` ConfigMap as:
+
+```yaml
+      - package: oci://ghcr.io/rmarting/plugin-dev-quotes-homepage-dynamic:3.0.7!parsifal-m-plugin-dev-quotes-homepage
+        disabled: false
+        pluginConfig:
+          dynamicPlugins:
+            frontend:
+              parsifal-m.plugin-dev-quotes-homepage:
+                mountPoints:
+                  - mountPoint: entity.page.overview/cards
+                    importName: DevQuote
+                    config:
+                      layout:
+                        gridColumnEnd:
+                          lg: span 4
+                          md: span 6
+                          xs: span 12
+                dynamicRoutes:
+                  - importName: DevQuote
+                    menuItem:
+                      text: Quote
+                    path: /devquote
+```
+
+Here, a full example of the `rhdh-dynamic-plugins` ConfigMap:
+
+```yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rhdh-dynamic-plugins
+data:
+  dynamic-plugins.yaml: |
+    includes:
+      - dynamic-plugins.default.yaml
+    plugins:
+      - package: oci://ghcr.io/rmarting/plugin-dev-quotes-homepage-dynamic:3.0.7!parsifal-m-plugin-dev-quotes-homepage
+        disabled: false
+        pluginConfig:
+          dynamicPlugins:
+            frontend:
+              parsifal-m.plugin-dev-quotes-homepage:
+                mountPoints:
+                  - mountPoint: entity.page.overview/cards
+                    importName: DevQuote
+                    config:
+                      layout:
+                        gridColumnEnd:
+                          lg: span 4
+                          md: span 6
+                          xs: span 12
+                dynamicRoutes:
+                  - importName: DevQuote
+                    menuItem:
+                      text: Quote
+                    path: /devquote
+```

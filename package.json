@@ -45,7 +45,8 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "postinstall": "husky install",
-    "fix": "backstage-cli repo fix --publish"
+    "fix": "backstage-cli repo fix --publish",
+    "build:image": "janus-cli package package-dynamic-plugins --force-export --tag plugin-dev-quotes-homepage-dynamic"
   },
   "dependencies": {
     "@backstage/core-plugin-api": "^1.10.0",
@@ -57,6 +58,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.28.2",
     "@backstage/dev-utils": "^1.1.2",
+    "@janus-idp/cli": "^3.4.1",
     "@spotify/prettier-config": "^15.0.0",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
